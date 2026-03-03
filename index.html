@@ -1,9 +1,45 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Redirection Page</title>
-  </head>
-  <body>
-    Redirection Page
-  </body>
+    <head>
+        <title>ScanQR</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+body {
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    width: 100%;
+    aspect-ratio: 1;
+    display: block;
+}
+
+button {
+    width: 100%;
+    font-size: 2em;
+}
+
+section {
+    margin-top: 20px;
+    margin-inline: 30px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+}
+        </style>
+    </head>
+    <body>
+        <video autoplay playsinline style="display: none;"></video>
+        <canvas width=480 height=640></canvas>
+        <div>
+            <button id='read'>Read QR</button>
+            <button id='download'>Download</button>
+        </div>
+
+        <section></section>
+
+        <script src="barcode.js"></script>
+    </body>
 </html>
