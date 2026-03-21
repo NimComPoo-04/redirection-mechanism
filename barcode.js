@@ -44,7 +44,7 @@ async function SetupVideo() {
 
     console.log(barcode);
 
-    const section = document.querySelector('section');
+    const section = document.querySelector('#section');
 
     const gfx = canvas.getContext('2d');
     gfx.fillRect(0, 0, canvas.width, canvas.height);
@@ -102,25 +102,23 @@ async function SetupVideo() {
                 const eve_name = data[0]
                 const team_name = data[1]
                 const serial_no = data[2]
-
-                const names = data.slice(3, data.length - 1);
-                const list_name = '<ul>'+names.map(a => `<li>${a}</li>`).join(' ')+'</ul>';
-
+                const names = data.slice(3, data.length - 1)
                 const email = data[data.length-1]
 
-                current = `<div>
-                    <div style="display: flex; flex-direction: row;">
-                        <div style="color: darkred; text-align: center; font-size: 2em; flex-grow: 1;">${serial_no}</div>
-                        <div style="text-align: center; font-size: 2em; flex-grow: 10;">${eve_name}</div>
-                    </div>
-                    <div style='color: white'>SPACER</div>
-                    <div style="font-size: 1.2em;">
-                    <div><strong>Team:</strong><div style="text-align: center">${team_name}</div></div>
-                    <div><strong>Folks:</strong><div style="text-align: center">${list_name}</div></div>
-                    <div><strong>Email:</strong><div style="text-align: center">${email}</div></div>
-                    </div>
-                    <hr>
-                 </div>`
+                current = ''
+                for(let pname of names) {
+                current += `<tr>
+                    <td>${serial_no}</td>
+                    <td>${eve_name}</td>
+                    <td>${team_name}</td>
+                    <td>${pname}</td>
+                </tr>
+                `
+                }
+                current += `<tr>
+                        <th style='background:goldenrod'>Email: </th>
+                        <td style='background:goldenrod' colspan=3>Hello@gmail.com</td>
+                    </tr>`
             }
         }
         catch(e) {

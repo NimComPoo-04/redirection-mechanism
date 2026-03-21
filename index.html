@@ -4,10 +4,39 @@
         <title>ScanQR</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
+:root {
+  --primary: #000000;
+  --secondary: #C39A22;
+  --accent: #FFD700;
+  --shadow: 8px 8px 0px var(--primary);
+}
+
 body {
     margin: 0px;
-    display: flex;
-    flex-direction: column;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--accent);
+  color: var(--primary);
+  border: 0px none;
+  border-bottom: 3px solid var(--primary);
+  font-size: 2em;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.05s;
+
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+button:active {
+  background-color: var(--secondary);
+  box-shadow: 4px 4px 0px var(--primary);
+  transform: scale(0.9, 0.9);
 }
 
 canvas {
@@ -16,18 +45,56 @@ canvas {
     display: block;
 }
 
-button {
-    width: 100%;
-    font-size: 2em;
-}
-
 section {
-    margin-top: 20px;
-    margin-inline: 30px;
+    /*margin-top: 20px;*/
+    /*margin-inline: 30px;*/
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;
 }
+
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  margin: 0px auto;
+  border-collapse: collapse;
+  border-top: 1px solid #999999;
+  border-bottom: 1px solid #999999;
+}
+
+th,
+td {
+  vertical-align: top;
+  padding: 0.6em;
+}
+
+tr :nth-child(1) {
+  text-align: center;
+  width: fit-content;
+}
+
+tr  {
+  text-align: center;
+}
+
+
+tfoot tr {
+  text-align: center;
+}
+
+tfoot {
+  border-top: 1px solid;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #eeeeee;
+}
+
+thead {
+    background: goldenrod;
+}
+
         </style>
     </head>
     <body>
@@ -38,7 +105,20 @@ section {
             <button id='download'>Download</button>
         </div>
 
-        <section></section>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sl.No.</th>
+                        <th>Event</th>
+                        <th>Team</th>
+                        <th>Participant</th>
+                    </tr>
+                </thead>
+                <tbody id=section>
+                </tbody>
+            </table>
+        </section>
 
         <script src="barcode.js"></script>
     </body>
