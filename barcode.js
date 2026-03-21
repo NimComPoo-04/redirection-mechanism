@@ -1,20 +1,3 @@
-function printObject(str) {
-	if((str) instanceof Object)
-	{
-		for(let t in str) {
-			const prop = document.createElement('div')
-			prop.innerText = t + ' : ' + str[t]
-			document.body.appendChild(prop)
-		}
-	}
-	else
-	{
-		const prop = document.createElement('div')
-		prop.innerText = str
-		document.body.appendChild(prop)
-	}
-}
-
 async function SetupVideo() {
 
     let barcode = null;
@@ -49,17 +32,53 @@ async function SetupVideo() {
     const gfx = canvas.getContext('2d');
     gfx.fillRect(0, 0, canvas.width, canvas.height);
 
-    let current = '';
+    let current = undefined;
     let raw = '';
     let pungent = '';
 
     const button = document.querySelector('#read')
-    button.onclick = function wokash() {
-        if(current != '')
+    button.onclick = async function wokash() {
+
+        if(current)
         { 
-            section.innerHTML = current;
+            section.innerHTML = '<div style="color:darkred; font-weight:bold; font-size:2em;">Loading...</div>';
+            const sheet = await GetSheet(current.event_name);
+
+            // get the rows that have the things
+            const first_name = current.names[0].toLowerCase().replace(/ +/g, '')
+            let serial_nos = sheet.reduce((a, e, i) => {
+                const k = e.search(first_name)
+                if(k >= 0) {
+                    a.push(i+1)
+                }
+                return a
+            }, []) 
+
+            console.log(serial_nos)
+            if(serial_nos.length == 0)
+                serial_nos = current.serial_no
+            else
+                serial_nos = serial_nos.join(' ')
+
+
+            let croaker = ''
+            for(let pname of current.names) {
+                croaker += `<tr>
+                    <td>${serial_nos}</td>
+                    <td>${current.event_name}</td>
+                    <td>${current.team_name}</td>
+                    <td>${pname}</td>
+                </tr>
+                `
+            }
+            croaker += `<tr>
+                        <th style='background:goldenrod'>Email: </th>
+                        <td style='background:goldenrod' colspan=3>${current.email}</td>
+                    </tr>`
+
+            section.innerHTML = croaker;
         }
-        current = '';
+        current = undefined;
         pungent += raw + '\n';
     }
 
@@ -96,29 +115,15 @@ async function SetupVideo() {
                 gfx.stroke();
 
                 const data = a.rawValue.split('\n')
-
                 raw = data.join(', ')
 
-                const eve_name = data[0]
-                const team_name = data[1]
-                const serial_no = data[2]
-                const names = data.slice(3, data.length - 1)
-                const email = data[data.length-1]
-
-                current = ''
-                for(let pname of names) {
-                current += `<tr>
-                    <td>${serial_no}</td>
-                    <td>${eve_name}</td>
-                    <td>${team_name}</td>
-                    <td>${pname}</td>
-                </tr>
-                `
+                current = {
+                    event_name: data[0],
+                    team_name: data[1],
+                    serial_no: data[2],
+                    names: data.slice(3, data.length - 1),
+                    email: data[data.length-1]
                 }
-                current += `<tr>
-                        <th style='background:goldenrod'>Email: </th>
-                        <td style='background:goldenrod' colspan=3>Hello@gmail.com</td>
-                    </tr>`
             }
         }
         catch(e) {
@@ -128,5 +133,57 @@ async function SetupVideo() {
     }
     await animate();
 }
+
+async function GetSheet(event_name) {
+    if(event_name in sheet_cache) {
+        return sheet_cache[event_name]
+    }
+
+    // get the thing from appscript
+    try {
+
+        let text = localStorage.getItem(event_name);
+
+        if(text == null)
+        {
+            const thing = await fetch(`${appscript_url}?password=${password}&event_name=${event_name}`)
+            text = await thing.text()
+            localStorage.setItem(event_name, text);
+        }
+
+        // take out all the white space and conver to lowercase just to facilitate the search
+        const header = text.split('\n')
+        sheet_cache[event_name] = header.splice(1).map(a => a.toLowerCase().replace(/ +/g, ''))
+
+        if(header[0].search('NOT') >= 0)
+        {
+            window.alert('Something went wrong at retrieval man')
+        }
+
+    }
+    catch(e) {
+        sheet_cache[event_name] = ['Something Went Terribly Wrong man idk']
+    }
+
+    return sheet_cache[event_name]
+}
+
+// We will connect the thingburger
+const appscript_url = "https://script.google.com/macros/s/AKfycbzTallCs4nTluaGT09I31qpShKkpm8IZWdk-LL7Q4JMHnmV0I4ONOnjytjtU1wbNBjr9A/exec"
+// const appscript_url = '/codeplay.csv'
+const urlargs = new URLSearchParams(window.location.search);
+const password = urlargs.get('password')//''
+
+// refresh localstorage every 6 hours
+const current = new Date()
+const time = localStorage.getItem('lastSaved')
+if(time == null || current - new Date(time) > 2.16E7)
+{
+    // reset the thing
+    localStorage.clear()
+    localStorage.setItem('lastSaved', new Date().toISOString())
+}
+
+const sheet_cache = {}
 
 SetupVideo();
