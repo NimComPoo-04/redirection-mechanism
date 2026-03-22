@@ -55,10 +55,12 @@ async function SetupVideo() {
             }, []) 
 
             console.log(serial_nos)
-            if(serial_nos.length == 0)
-                serial_nos = current.serial_no
-            else
+            if(serial_nos.length == 0) {
+                serial_nos = `<span style="color: red">NOT FOUND BUT ${current.serial_no}<span>`
+            }
+            else {
                 serial_nos = serial_nos.join(' ')
+            }
 
 
             let croaker = ''
