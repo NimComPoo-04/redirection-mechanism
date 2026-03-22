@@ -49,7 +49,7 @@ async function SetupVideo() {
             let serial_nos = sheet.reduce((a, e, i) => {
                 const k = e.search(first_name)
                 if(k >= 0) {
-                    a.push(i+1)
+                    a.push(i+0)
                 }
                 return a
             }, []) 
